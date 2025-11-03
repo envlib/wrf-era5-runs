@@ -17,6 +17,7 @@ services:
   wrf-runs:
     image: mullenkamp/wrf-era5-runs:1.1
     # user: ${MY_UID}:${MY_GID}
+    shm_size: '1gb'
     volumes:
         - "~/git/wrf-repos/wrf-era5-runs/parameters.toml:/app/parameters.toml"
         - '~/git/wrf-repos/wrf-testing/namelists/namelist_uc_v02b.wps:/data/namelists/namelist.wps'
