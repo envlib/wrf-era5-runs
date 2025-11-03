@@ -33,7 +33,7 @@ def run_era5_to_int(start_date, end_date, hour_interval, del_old=True):
     cmd_list = shlex.split(cmd_str)
     p = subprocess.run(cmd_list, capture_output=True, text=True, check=False, cwd=params.data_path)
 
-    if len(p.stderr) > 0:
+    if p.stderr != '':
         raise ValueError(p.stderr)
     else:
         if del_old:

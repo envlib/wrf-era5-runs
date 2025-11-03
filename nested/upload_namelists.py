@@ -34,12 +34,10 @@ def upload_namelists(run_uuid):
         name = 'output'
         config_path = utils.create_rclone_config(name, params.data_path, remote)
 
-        files_from = "namelist.input\nnamelist.wps"
-
         dest_str = f'{name}:{out_path}/namelists/{run_uuid}/'
-        cmd_str = f'rclone copy {params.data_path} {dest_str} --config={config_path} --files-from -'
+        cmd_str = f'rclone copy {params.data_path} {dest_str} --config={config_path} --include "namelist.*"'
         cmd_list = shlex.split(cmd_str)
-        p = subprocess.run(cmd_list, input=files_from, capture_output=True, text=True, check=False)
+        p = subprocess.run(cmd_list, capture_output=True, text=True, check=False)
 
         if p.stderr != '':
             raise ValueError(p.stderr)

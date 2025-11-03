@@ -9,7 +9,7 @@ import pathlib
 import shlex
 import subprocess
 import pendulum
-import shutil
+import sentry_sdk
 
 import params
 
@@ -23,22 +23,23 @@ import params
 ### Functions
 
 
-def run_era5_to_int(start_date, end_date, hour_interval, del_old=True):
+def run_metgrid(del_old=True):
     """
 
     """
-    era5_path = params.data_path.joinpath('era5')
-
-    cmd_str = f'era5_to_int -h {hour_interval} {era5_path} "{start_date}" "{end_date}"'
+    cmd_str = f'{params.metgrid_exe}'
     cmd_list = shlex.split(cmd_str)
     p = subprocess.run(cmd_list, capture_output=True, text=True, check=False, cwd=params.data_path)
 
-    if len(p.stderr) > 0:
-        raise ValueError(p.stderr)
-    else:
+    if 'Successful completion of metgrid.' in p.stdout:
         if del_old:
-            shutil.rmtree(era5_path)
+            for path in params.data_path.glob('ERA5:*'):
+                path.unlink()
         return True
+    else:
+        scope = sentry_sdk.get_current_scope()
+        scope.add_attachment(path=params.data_path.joinpath('metgrid.log'))
+        raise ValueError(f'metgrid failed. Look at the metgrid.log file for details: {p.stderr}')
 
 
 

@@ -1,0 +1,10 @@
+version: '3.3'
+
+services:
+  wrf-runs:
+    image: mullenkamp/wrf-era5-nested-runs:1.0
+    # user: ${MY_UID}:${MY_GID}
+    volumes:
+        - "~/git/wrf-repos/wrf-runs/parameters.toml:/app/parameters.toml"
+        # - '~/data/wrf/tests/test2:/data'
+

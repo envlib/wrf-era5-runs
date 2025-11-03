@@ -1,0 +1,27 @@
+FROM mullenkamp/wrf-wps-debian:1.0
+
+WORKDIR /app
+
+# RUN uv tool install toml-cli
+
+RUN groupadd --gid 1000 appgroup && \
+    useradd --uid 1000 --gid appgroup --shell /bin/bash --no-create-home appuser && \
+    usermod -aG sudo appuser
+
+USER appuser
+
+COPY requirements.txt .
+RUN uv pip install --no-cache-dir -r requirements.txt
+
+RUN mkdir /data
+RUN chown -R 1000:1000 /data
+RUN chmod -R 777 /data
+
+COPY *.py .
+RUN chown 1000:1000 ./*.py
+RUN chmod -R 777 ./*.py
+
+CMD ["uv", "run", "python", "-u", "main.py"]
+# CMD ["python", "-u", "main.py"]
+
+# CMD ["/bin/bash"]
