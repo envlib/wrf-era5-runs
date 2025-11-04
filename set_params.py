@@ -95,8 +95,7 @@ def check_set_params(domains):
                 raise ValueError(f'The parent_id {parent_id} does not exist in the assigned domains. The parent/child domains must match.')
 
         # Update the projection if needed
-        if domains[0] != 1:
-            _ = utils.recalc_geogrid(wps_domains, domains)
+        _ = utils.recalc_geogrid(wps_domains, domains)
 
         n_domains = len(domains)
 

@@ -124,14 +124,6 @@ def recalc_geogrid(geogrid, domains):
     parent_ids = geogrid['parent_id']
     old_max_domains = len(parent_ids)
 
-    new_top_domain = domains[0]
-
-    # TODO: eventually I'd like to allow multiple sub domains below the ndown domain, but currently only one is allowed
-    if new_top_domain == 1 or new_top_domain > old_max_domains:
-        raise ValueError('new_top_domain must be > 1 and not greater than max_domains')
-
-    # new_domain_index = list(range(new_top_domain - 1, old_max_domains))
-
     parent_grid_ratio = geogrid['parent_grid_ratio']
     
     dx = geogrid['dx']
@@ -155,59 +147,67 @@ def recalc_geogrid(geogrid, domains):
         lon_0 = geogrid['ref_lon']
     
     ref_lon = geogrid['ref_lon']
-    
-    lon_angle = lon_0 - ref_lon
-    
-    if map_proj == 'lambert':
-        pwrf = f"""+proj=lcc +lat_1={lat_1} +lat_2={lat_2} +lat_0={lat_0} +lon_0={lon_0} +x_0=0 +y_0=0 +a={params.wrf_sphere_radius} +b={params.wrf_sphere_radius}"""
-    elif map_proj == 'mercator':
-        pwrf = f"""+proj=merc +lat_ts={lat_1} +lon_0={lon_0} +x_0=0 +y_0=0 +a={params.wrf_sphere_radius} +b={params.wrf_sphere_radius}"""
-    elif map_proj == 'polar':
-        pwrf = f"""+proj=stere +lat_ts={lat_1} +lat_0=90.0 +lon_0={lon_0} +x_0=0 +y_0=0 +a={params.wrf_sphere_radius} +b={params.wrf_sphere_radius}"""
-    else:
-        raise NotImplementedError('WRF proj not implemented yet: '
-                                  f'{map_proj}')
-    
-    proj_crs = pyproj.CRS.from_string(pwrf)
-    
-    geo_crs = pyproj.CRS(
-            proj='latlong',
-            R=params.wrf_sphere_radius
-        )
-    
-    geo_to_proj = pyproj.Transformer.from_crs(geo_crs, proj_crs, always_xy=True)
-    proj_to_geo = pyproj.Transformer.from_crs(proj_crs, geo_crs, always_xy=True)
-    
-    for i in range(1, new_top_domain):
-        prev_x_center, prev_y_center = geo_to_proj.transform(ref_lon, lat_0)
-    
-        prev_dx_center = ((e_we[i-1] - 1) * 0.5) * dx
-        prev_dy_center = ((e_sn[i-1] - 1) * 0.5) * dy
-    
-        i_start = i_parent_start[i] - 1
-        j_start = j_parent_start[i] - 1
-    
-        new_dx_start = i_start * dx
-        new_dy_start = j_start * dy
-    
-        dx = dx / parent_grid_ratio[i]
-        dy = dy / parent_grid_ratio[i]
-    
-        new_dx_end = new_dx_start + (dx * (e_we[i] - 1))
-        new_dy_end = new_dy_start + (dy * (e_sn[i] - 1))
-    
-        new_dx_center = (new_dx_end + new_dx_start) * 0.5
-        new_dy_center = (new_dy_end + new_dy_start) * 0.5
-    
-        ddx = new_dx_center - prev_dx_center
-        ddy = new_dy_center - prev_dy_center
-    
-        new_x_center = prev_x_center + ddx
-        new_y_center = prev_y_center + ddy
-    
-        ref_lon, lat_0 = proj_to_geo.transform(new_x_center, new_y_center)
-    
-    lon_0 = ref_lon + lon_angle
+
+    new_top_domain = domains[0]
+
+    # TODO: eventually I'd like to allow multiple sub domains below the ndown domain, but currently only one is allowed
+    if new_top_domain > old_max_domains:
+        raise ValueError('new_top_domain must be greater than max_domains')
+
+    if new_top_domain > 1:
+
+        lon_angle = lon_0 - ref_lon
+
+        if map_proj == 'lambert':
+            pwrf = f"""+proj=lcc +lat_1={lat_1} +lat_2={lat_2} +lat_0={lat_0} +lon_0={lon_0} +x_0=0 +y_0=0 +a={params.wrf_sphere_radius} +b={params.wrf_sphere_radius}"""
+        elif map_proj == 'mercator':
+            pwrf = f"""+proj=merc +lat_ts={lat_1} +lon_0={lon_0} +x_0=0 +y_0=0 +a={params.wrf_sphere_radius} +b={params.wrf_sphere_radius}"""
+        elif map_proj == 'polar':
+            pwrf = f"""+proj=stere +lat_ts={lat_1} +lat_0=90.0 +lon_0={lon_0} +x_0=0 +y_0=0 +a={params.wrf_sphere_radius} +b={params.wrf_sphere_radius}"""
+        else:
+            raise NotImplementedError('WRF proj not implemented yet: '
+                                      f'{map_proj}')
+        
+        proj_crs = pyproj.CRS.from_string(pwrf)
+        
+        geo_crs = pyproj.CRS(
+                proj='latlong',
+                R=params.wrf_sphere_radius
+            )
+        
+        geo_to_proj = pyproj.Transformer.from_crs(geo_crs, proj_crs, always_xy=True)
+        proj_to_geo = pyproj.Transformer.from_crs(proj_crs, geo_crs, always_xy=True)
+        
+        for i in range(1, new_top_domain):
+            prev_x_center, prev_y_center = geo_to_proj.transform(ref_lon, lat_0)
+        
+            prev_dx_center = ((e_we[i-1] - 1) * 0.5) * dx
+            prev_dy_center = ((e_sn[i-1] - 1) * 0.5) * dy
+        
+            i_start = i_parent_start[i] - 1
+            j_start = j_parent_start[i] - 1
+        
+            new_dx_start = i_start * dx
+            new_dy_start = j_start * dy
+        
+            dx = dx / parent_grid_ratio[i]
+            dy = dy / parent_grid_ratio[i]
+        
+            new_dx_end = new_dx_start + (dx * (e_we[i] - 1))
+            new_dy_end = new_dy_start + (dy * (e_sn[i] - 1))
+        
+            new_dx_center = (new_dx_end + new_dx_start) * 0.5
+            new_dy_center = (new_dy_end + new_dy_start) * 0.5
+        
+            ddx = new_dx_center - prev_dx_center
+            ddy = new_dy_center - prev_dy_center
+        
+            new_x_center = prev_x_center + ddx
+            new_y_center = prev_y_center + ddy
+        
+            ref_lon, lat_0 = proj_to_geo.transform(new_x_center, new_y_center)
+        
+        lon_0 = ref_lon + lon_angle
     
     ## Save projection back to namelist.wps
     ref_lat = round(lat_0, 6)
@@ -224,8 +224,8 @@ def recalc_geogrid(geogrid, domains):
     
     ## Update other parameters in namelist.wps
     domain_index = [domain - 1 for domain in domains]
-    new_top_parent_id = parent_ids[new_top_domain - 1]
-    geogrid['parent_id'] = [pid - new_top_parent_id if pid - new_top_parent_id > 1 else 1 for pid in domain_index]
+    new_top_parent_id = new_top_domain - 1
+    geogrid['parent_id'] = [parent_ids[pid] - new_top_parent_id if parent_ids[pid] - new_top_parent_id > 1 else 1 for pid in domain_index]
     
     new_parent_grid_ratio = [parent_grid_ratio[index] for index in domain_index]
     new_parent_grid_ratio[0] = 1

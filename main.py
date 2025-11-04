@@ -70,7 +70,6 @@ if 'domains' in params.file:
 else:
     domains = None
 
-
 ndown_check, domains_init = check_ndown_params(domains)
 
 start_date, end_date, hour_interval, outputs = check_set_params(domains_init)
