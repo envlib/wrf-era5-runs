@@ -119,6 +119,8 @@ if ndown_check:
 
 else:
     rename_dict = {}
+    for i, domain in enumerate(domains):
+        rename_dict[f'_d{i+1:02d}_'] = f'_d{domain:02d}_'
 
 # print('-- Running WRF...')
 # monitor_wrf(outputs, end_date, run_uuid, rename_dict)
