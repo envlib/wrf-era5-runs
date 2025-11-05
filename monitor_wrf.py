@@ -61,7 +61,7 @@ def monitor_wrf(outputs, end_date, run_uuid, rename_dict):
         files = utils.select_files_to_ul(out_files, 1)
 
         if files and out_path is not None:
-            utils.rename_files(files, rename_dict)
+            files = utils.rename_files(files, rename_dict)
             utils.ul_output_files(files, run_path, name, out_path, params.config_path)
 
         sleep(60)
@@ -79,7 +79,7 @@ def monitor_wrf(outputs, end_date, run_uuid, rename_dict):
             files = utils.select_files_to_ul(out_files, 0)
 
         if files and out_path is not None:
-            utils.rename_files(files, rename_dict)
+            files = utils.rename_files(files, rename_dict)
             utils.ul_output_files(files, run_path, name, out_path, params.config_path)
 
         return True

@@ -41,6 +41,9 @@ if 'domains' in os.environ:
 
 run_path = data_path.joinpath('run')
 
+is_sentry = 'sentry' in file
+
+
 ##############################################
 ### Assign executables
 

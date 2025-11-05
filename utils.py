@@ -86,11 +86,19 @@ def rename_files(files, rename_dict):
     """
 
     """
-    for orig, new in rename_dict.items():
-        for file_path in files:
-            file_name = file_path.name.replace(orig, new)
-            new_file_path = file_path.parent.joinpath(file_name)
-            os.rename(file_path, new_file_path)
+    if rename_dict:
+        new_files = []
+        for orig, new in rename_dict.items():
+            for file_path in files:
+                orig_path, orig_file_name = os.path.split(file_path)
+                file_name = orig_file_name.replace(orig, new)
+                new_file_path = os.path.join(orig_path, file_name)
+                os.rename(file_path, new_file_path)
+                new_files.append(new_file_path)
+    else:
+        new_files = files
+
+    return new_files
 
 
 def ul_output_files(files, run_path, name, out_path, config_path):

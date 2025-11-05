@@ -37,8 +37,9 @@ def run_metgrid(del_old=True):
                 path.unlink()
         return True
     else:
-        scope = sentry_sdk.get_current_scope()
-        scope.add_attachment(path=params.data_path.joinpath('metgrid.log'))
+        if params.is_sentry:
+            scope = sentry_sdk.get_current_scope()
+            scope.add_attachment(path=params.data_path.joinpath('metgrid.log'))
         raise ValueError(f'metgrid failed. Look at the metgrid.log file for details: {p.stderr}')
 
 
