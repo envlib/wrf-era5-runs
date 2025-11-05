@@ -59,7 +59,7 @@ def dl_ndown_input(new_top_domain, start_date, end_date):
     ## Check for the files
     src_str = f'{name}:{input_path}/'
 
-    cmd_str = f'rclone lsf {src_str} --config={config_path} --include-from -'
+    cmd_str = f'rclone lsf {src_str} --config={config_path} --max-depth 1 --files-only --include-from -'
     cmd_list = shlex.split(cmd_str)
     p = subprocess.run(cmd_list, input=include_from, capture_output=True, text=True, check=False)
 
