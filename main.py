@@ -125,6 +125,8 @@ else:
     for i, domain in enumerate(domains):
         rename_dict[f'_d{i+1:02d}_'] = f'_d{domain:02d}_'
 
+start_time2 = pendulum.now()
+
 print('-- Running WRF...')
 monitor_wrf(outputs, end_date, run_uuid, rename_dict)
 
@@ -137,6 +139,12 @@ diff = end_time - start_time
 mins = round(diff.total_minutes())
 
 print(f"-- Total run minutes: {mins}")
+
+diff = end_time - start_time2
+
+mins = round(diff.total_minutes())
+
+print(f"-- WRF run minutes: {mins}")
 
 
 

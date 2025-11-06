@@ -48,7 +48,7 @@ def run_geogrid(src_n_domains, domains, rm_existing=True):
     if len(stderr) > 0:
         raise ValueError(stderr)
 
-    print(stdout)
+    # print(stdout)
 
     ## Remove and rename files if needed
     if len(domains) < src_n_domains:
