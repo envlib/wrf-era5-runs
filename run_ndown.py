@@ -86,7 +86,7 @@ def run_ndown(run_uuid, del_old=True):
 
         print(f'-- Uploading ndown.exe log files for run uuid: {run_uuid}')
         dest_str = f'{name}:{out_path}/logs/{run_uuid}/'
-        cmd_str = f'rclone copy {params.data_path} {dest_str} --config={params.config_path} --include "rsl.*" --transfers=8'
+        cmd_str = f'rclone copy {params.run_path} {dest_str} --config={params.config_path} --include "rsl.*" --transfers=8'
         cmd_list = shlex.split(cmd_str)
         p = subprocess.run(cmd_list, capture_output=True, text=True, check=True)
 

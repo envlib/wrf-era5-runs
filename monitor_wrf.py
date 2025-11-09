@@ -93,7 +93,7 @@ def monitor_wrf(outputs, end_date, run_uuid, rename_dict):
         # scope.add_attachment(path=wrf_log_path)
         print(f'-- Uploading WRF log files for run uuid: {run_uuid}')
         dest_str = f'{name}:{out_path}/logs/{run_uuid}/'
-        cmd_str = f'rclone copy {params.run_path} {dest_str} --config={params.config_path} --include "rsl.*" --transfers=8'
+        cmd_str = f'rclone copy {params.run_path} {dest_str} --no-check-dest --config={params.config_path} --include "rsl.*" --transfers=8'
         cmd_list = shlex.split(cmd_str)
         p = subprocess.run(cmd_list, capture_output=True, text=True, check=True)
 

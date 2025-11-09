@@ -37,7 +37,7 @@ def upload_namelists(run_uuid):
         files_from = "namelist.input\nnamelist.wps"
 
         dest_str = f'{name}:{out_path}/namelists/{run_uuid}/'
-        cmd_str = f'rclone copy {params.data_path} {dest_str} --config={config_path} --files-from -'
+        cmd_str = f'rclone copy {params.data_path} {dest_str} --no-traverse --no-check-dest --config={config_path} --files-from -'
         cmd_list = shlex.split(cmd_str)
         p = subprocess.run(cmd_list, input=files_from, capture_output=True, text=True, check=False)
 
