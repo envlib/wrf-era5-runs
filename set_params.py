@@ -5,9 +5,11 @@ Created on Mon Sep 22 17:21:47 2025
 
 @author: mike
 """
+import os
 import pathlib
 import f90nml
 from datetime import datetime, timedelta
+import subprocess
 
 import params, utils
 
@@ -275,6 +277,14 @@ def set_nml_params(domains=None):
     ### Physics - Most should be done by the user
     ## Output precip rate to history file
     wrf_nml['physics']['prec_acc_dt'] = history_interval_nml
+
+    surface_physics = wrf_nml['physics']['sf_surface_physics']
+    if not isinstance(surface_physics, list):
+        surface_physics = [surface_physics]
+
+    if 4 in surface_physics:
+        cmd_str = 'ln -sf GEOGRID.TBL.ARW.noahmp GEOGRID.TBL'
+        p = subprocess.run(cmd_str, shell=True, capture_output=False, text=False, check=False, cwd=params.wps_path.joinpath('geogrid'))
 
     ### ungrib
     wps_nml['ungrib']['out_format'] = 'WPS'
